@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "722580091889",
+    "firebase_url": "https://globalnodes-80ea8.firebaseio.com",
+    "project_id": "globalnodes-80ea8",
+    "storage_bucket": "globalnodes-80ea8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722580091889:android:a151d23ea9ca1b90",
+        "android_client_info": {
+          "package_name": "a100588.galea.christian.globalnodes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "722580091889-58gktq0ugqu28c97j1rmht54f7f9s79q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "a100588.galea.christian.globalnodes",
+            "certificate_hash": "2066e4d7af60d23d6aede8b60e10ffac27e8697f"
+          }
+        },
+        {
+          "client_id": "722580091889-96f09l6ln8niav9vbtkvd7ig09i37poi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWfLTNLyYbzrjW2YYl6lSWGdg0qMALqvM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "722580091889-96f09l6ln8niav9vbtkvd7ig09i37poi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

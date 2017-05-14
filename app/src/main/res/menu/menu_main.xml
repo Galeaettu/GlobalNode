@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity"
+    app:showAsAction="never"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+    <item android:id="@+id/menu_log_out"
+        android:title="@string/log_out"
+        android:orderInCategory="100" />
+    <item android:id="@+id/menu_exit"
+        android:title="@string/close_app"
+        android:orderInCategory="100" />
+</menu>

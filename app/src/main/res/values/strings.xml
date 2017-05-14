@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Global Node</string>
+    <string name="app_myAccount">My Account</string>
+    <string name="facebook_application_id">1913221552247723</string>
+    <string name="facebook_app_id">1913221552247723</string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="log_out">Log Out</string>
+    <string name="chat">Chat</string>
+    <string name="close_app">Exit</string>
+    <string name="my_account">My Account</string>
+    <string name="cover_image">Cover Image</string>
+    <string name="user_profile_image">User Profile Image</string>
+</resources>

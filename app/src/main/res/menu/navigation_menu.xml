@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/menu_top_selections"
+        android:checkableBehavior="single">
+        <item android:id="@+id/nav_account"
+            android:title="@string/my_account"
+            android:icon="@mipmap/ic_person_black_24dp"/>
+
+        <item android:id="@+id/nav_chat"
+            android:title="@string/chat"
+            android:icon="@mipmap/ic_chat_black_24dp"/>
+
+        <item android:id="@+id/nav_log_out"
+            android:title="@string/log_out"
+            android:icon="@mipmap/ic_person_outline_black_24dp"/>
+    </group>
+    <group
+        android:id="@+id/menu_bottom_exit"
+        android:checkableBehavior="none">
+        <item android:id="@+id/nav_close_app"
+            android:title="@string/close_app"
+            android:icon="@mipmap/ic_close_black_24dp"/>
+    </group>
+</menu>
