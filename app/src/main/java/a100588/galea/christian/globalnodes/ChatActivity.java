@@ -13,9 +13,12 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,11 +31,14 @@ import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class ChatActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 0;
     private FirebaseAuth auth;
+
+    private String mMessageKey = null;
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
@@ -40,6 +46,8 @@ public class ChatActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private Toolbar mToolbar;
 
+    private DatabaseReference mDatabase;
+    private ListView listOfMessages;
     private FirebaseListAdapter<ChatMessage> adapter;
 
     @Override
@@ -56,7 +64,7 @@ public class ChatActivity extends AppCompatActivity {
             //user already signed in
             Log.d("AUTH ACTIVITY", auth.getCurrentUser().getEmail());
             displayChatMessages();
-            ListView listOfMessages = (ListView)findViewById(R.id.list_of_messages);
+            listOfMessages = (ListView)findViewById(R.id.list_of_messages);
             listOfMessages.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         }else{
             finish();
@@ -69,6 +77,8 @@ public class ChatActivity extends AppCompatActivity {
                     .build(), RC_SIGN_IN);
 
         }
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         NavigationHelper nh = new NavigationHelper();
@@ -149,6 +159,7 @@ public class ChatActivity extends AppCompatActivity {
                     // of ChatMessage to the Firebase database
                     FirebaseDatabase.getInstance()
                             .getReference()
+                            .child("Message")
                             .push()
                             .setValue(new ChatMessage(input.getText().toString(),
                                     FirebaseAuth.getInstance()
@@ -261,7 +272,7 @@ public class ChatActivity extends AppCompatActivity {
         ListView listOfMessages = (ListView)findViewById(R.id.list_of_messages);
 
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,
-                R.layout.message, FirebaseDatabase.getInstance().getReference()) {
+                R.layout.message, FirebaseDatabase.getInstance().getReference().child("Message")) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 // Get references to the views of message.xml
@@ -280,6 +291,33 @@ public class ChatActivity extends AppCompatActivity {
         };
 
         listOfMessages.setAdapter(adapter);
+        registerForContextMenu(listOfMessages);
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.chat_context_menu, menu);
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        mMessageKey = adapter.getRef(info.position).getKey();
+        switch (id){
+            case R.id.chat_delete_item:
+                Log.d("MENU DELETE", mMessageKey);
+                mDatabase.child("Message").child(mMessageKey).removeValue();
+                Log.d("MENU DELETE", info.toString());
+                Log.d("MENU DELETE", mMessageKey);
+                Log.d("MENU DELETE", Integer.toString( info.position));
+                break;
+            case R.id.chat_edit_item:
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/chat_delete_item"
+        android:title="@string/chat_delete_text"/>
+    <item
+        android:id="@+id/chat_edit_item"
+        android:title="@string/chat_edit_text"/>
+</menu>
