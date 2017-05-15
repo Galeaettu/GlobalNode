@@ -1,6 +1,8 @@
 package a100588.galea.christian.globalnodes;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +11,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +19,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,8 +38,11 @@ import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ChatActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 0;
@@ -165,9 +172,7 @@ public class ChatActivity extends AppCompatActivity {
                             .child("Message")
                             .push()
                             .setValue(new ChatMessage(input.getText().toString(),
-                                    FirebaseAuth.getInstance()
-                                            .getCurrentUser()
-                                            .getDisplayName())
+                                    FirebaseAuth.getInstance().getCurrentUser().getDisplayName())
                             );
 
                     // Clear the input
@@ -317,20 +322,61 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Toast toast = Toast.makeText(ChatActivity.this,"Deleted",Toast.LENGTH_LONG);
+        //final Toast toast = Toast.makeText(ChatActivity.this,"Deleted",Toast.LENGTH_LONG);
 
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         mMessageKey = adapter.getRef(info.position).getKey();
         switch (id){
             case R.id.chat_delete_item:
-                Log.d("MENU DELETE", mMessageKey);
+//                Log.d("MENU DELETE", mMessageKey);
                 mDatabase.child("Message").child(mMessageKey).removeValue();
-                Log.d("MENU DELETE", info.toString());
-                Log.d("MENU DELETE", mMessageKey);
-                Log.d("MENU DELETE", Integer.toString( info.position));
-                toast.show();
+                mDatabase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Toast.makeText(ChatActivity.this,"Deleted",Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(ChatActivity.this,"Delete Cancelled",Toast.LENGTH_LONG).show();
+                    }
+                });
+
                 break;
             case R.id.chat_edit_item:
+                View view = (LayoutInflater.from(ChatActivity.this)).inflate(R.layout.chat_dialog_edit,null);
+                final EditText editMessageText = (EditText)view.findViewById(R.id.chat_message_edit);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+                DatabaseReference mRef = mDatabase.child("Message").child(mMessageKey);
+                mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
+                        final String messageTextToEdit = chatMessage.getMessageText();
+                        Log.d("GOT TEXT",messageTextToEdit);
+                        editMessageText.setText(messageTextToEdit);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                builder.setTitle("Edit message");
+                builder.setView(view);
+                builder
+                        .setPositiveButton(R.string.chat_edit_text, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Log.d("EDIT TEXT",editMessageText.getText().toString());
+                                mDatabase.child("Message").child(mMessageKey).child("messageText")
+                                        .setValue(editMessageText.getText().toString());
+                            }
+                        });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
                 break;
         }
         return super.onContextItemSelected(item);
