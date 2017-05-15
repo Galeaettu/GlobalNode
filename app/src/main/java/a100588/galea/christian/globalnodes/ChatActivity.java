@@ -1,5 +1,6 @@
 package a100588.galea.christian.globalnodes;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -271,14 +272,21 @@ public class ChatActivity extends AppCompatActivity {
     private void displayChatMessages() {
         ListView listOfMessages = (ListView)findViewById(R.id.list_of_messages);
 
+        final ProgressDialog mProgress = new ProgressDialog(ChatActivity.this);
+        mProgress.setMessage("Loading Messages...");
+        mProgress.setTitle(R.string.chat);
+        mProgress.show();
+
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,
                 R.layout.message, FirebaseDatabase.getInstance().getReference().child("Message")) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
+
                 // Get references to the views of message.xml
                 TextView messageText = (TextView)v.findViewById(R.id.message_text);
                 TextView messageUser = (TextView)v.findViewById(R.id.message_user);
                 TextView messageTime = (TextView)v.findViewById(R.id.message_time);
+
 
                 // Set their text
                 messageText.setText(model.getMessageText());
@@ -287,10 +295,13 @@ public class ChatActivity extends AppCompatActivity {
                 // Format the date before showing it
                 messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)",
                         model.getMessageTime()));
+
+                mProgress.dismiss();
             }
         };
 
         listOfMessages.setAdapter(adapter);
+
         registerForContextMenu(listOfMessages);
     }
 
