@@ -153,11 +153,17 @@ public class AccountDetails extends AppCompatActivity {
 
         // FACEBOOK TEST
 
+        final ProgressDialog mProgress = new ProgressDialog(AccountDetails.this);
+        mProgress.setMessage("Loading Account...");
+        mProgress.setTitle(R.string.my_account);
+        mProgress.show();
+
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken()
                 , new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
+                        mProgress.show();
                         String user_id = "";
                         String user_name = "";
                         String user_gender = "";
@@ -196,12 +202,15 @@ public class AccountDetails extends AppCompatActivity {
                         Log.d("FB TEST",user_picture );
                         Log.d("FB TEST",object.toString() );
                         Log.d("FB COMPLETE", "COMPLETE");
+                        mProgress.dismiss();
                     }
                 });
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id,name,gender,location,cover,picture.width(500).height(500)");
         request.setParameters(parameters);
         request.executeAsync();
+
+
 
     }
 

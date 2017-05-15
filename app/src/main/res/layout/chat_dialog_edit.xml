@@ -8,8 +8,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/chat_message_edit"
         android:textIsSelectable="false"
-        android:inputType="text"
-        android:allowUndo="true"
-        android:contextClickable="true"
-        android:clickable="true" />
+        android:inputType="text|textMultiLine"
+        android:allowUndo="false"
+        android:contextClickable="false"
+        android:clickable="true"
+        android:nestedScrollingEnabled="false"
+        android:maxLines="10" />
 </LinearLayout>
