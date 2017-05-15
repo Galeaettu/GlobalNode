@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -43,6 +44,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 public class ChatActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 0;
@@ -160,6 +162,7 @@ public class ChatActivity extends AppCompatActivity {
 
         FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
 
+        registerForContextMenu(fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -173,12 +176,13 @@ public class ChatActivity extends AppCompatActivity {
                             .push()
                             .setValue(new ChatMessage(
                                     input.getText().toString()
-                                    , FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),
-                                    FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    , FirebaseAuth.getInstance().getCurrentUser().getDisplayName())
                             );
 
                     // Clear the input
                     input.setText("");
+                }else{
+                    Toast.makeText(ChatActivity.this, "Enter some text.\nHold button to send an image.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -295,10 +299,23 @@ public class ChatActivity extends AppCompatActivity {
                 TextView messageText = (TextView)v.findViewById(R.id.message_text);
                 TextView messageUser = (TextView)v.findViewById(R.id.message_user);
                 TextView messageTime = (TextView)v.findViewById(R.id.message_time);
+                ImageView messageImage = (ImageView)v.findViewById(R.id.message_image);
+
 
                 // Set their text
                 messageText.setText(model.getMessageText());
                 messageUser.setText(model.getMessageUser());
+
+                try {
+                    if (model.getMessageImage().length() > 0) {
+                        Log.d("MESSAGE PIC", model.getMessageImage());
+                        messageImage.setVisibility(View.VISIBLE);
+                        Picasso.with(ChatActivity.this).load(model.getMessageImage()).into(messageImage);
+                        Log.d("MESSAGE PIC", "YEP");
+                    }
+                }catch (NullPointerException e){
+                    messageImage.setVisibility(View.GONE);
+                }
 
                 // Format the date before showing it
                 messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)",
@@ -318,33 +335,44 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(final ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.chat_context_menu, menu);
+        int id = v.getId();
 
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        mMessageKey = adapter.getRef(info.position).getKey();
+        switch (id){
+            case R.id.list_of_messages:
+                MenuInflater inflater = getMenuInflater();
+                inflater.inflate(R.menu.chat_context_menu, menu);
 
-        DatabaseReference mRefClicked = mDatabase.child("Message").child(mMessageKey);
-        mRefClicked.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
-                final String userKey = chatMessage.getUserKey();
-                Log.d("GOT USER KEY",userKey);
+                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+                mMessageKey = adapter.getRef(info.position).getKey();
 
-                if (userKey.equals(auth.getCurrentUser().getUid())){
+                DatabaseReference mRefClicked = mDatabase.child("Message").child(mMessageKey);
+                mRefClicked.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
+                        final String userKey = chatMessage.getUserKey();
+                        Log.d("GOT USER KEY",userKey);
 
-                }else{
-                    Toast.makeText(ChatActivity.this,"This is not your message",Toast.LENGTH_LONG).show();
-                    menu.close();
-                }
-            }
+                        if (userKey.equals(auth.getCurrentUser().getUid())){
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(ChatActivity.this,"No User Id available",Toast.LENGTH_LONG).show();
-            }
-        });
+                        }else{
+                            Toast.makeText(ChatActivity.this,"This is not your message",Toast.LENGTH_LONG).show();
+                            menu.close();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(ChatActivity.this,"No User Id available",Toast.LENGTH_LONG).show();
+                    }
+                });
+                break;
+            case R.id.fab:
+                MenuInflater inflater_imageSend = getMenuInflater();
+                inflater_imageSend.inflate(R.menu.chat_image_context_menu, menu);
+            break;
+        }
+
 
 
     }
@@ -353,11 +381,12 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        mMessageKey = adapter.getRef(info.position).getKey();
+
 
         switch (id){
             case R.id.chat_delete_item:
+                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                mMessageKey = adapter.getRef(info.position).getKey();
                 mDatabase.child("Message").child(mMessageKey).removeValue();
                 mDatabase.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -405,6 +434,9 @@ public class ChatActivity extends AppCompatActivity {
 
                 AlertDialog dialog = builder.create();
                 dialog.show();
+                break;
+            case R.id.chat_image_send:
+                Toast.makeText(ChatActivity.this, "Image Send Test", Toast.LENGTH_SHORT).show();
                 break;
         }
         return super.onContextItemSelected(item);

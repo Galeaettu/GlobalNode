@@ -17,7 +17,7 @@
         android:layout_alignBottom="@+id/message_user"
         android:layout_alignParentEnd="true"
         android:id="@+id/message_time"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
+        android:layout_marginEnd="@dimen/activity_horizontal_margin" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,5 +28,15 @@
         android:id="@+id/message_text"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="18sp"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+        android:layout_marginStart="@dimen/activity_horizontal_margin" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/message_image"
+        android:layout_below="@+id/message_user"
+        android:layout_centerHorizontal="true"
+        android:visibility="visible"
+        android:scaleType="center"
+        android:layout_margin="10dp" />
 </RelativeLayout>

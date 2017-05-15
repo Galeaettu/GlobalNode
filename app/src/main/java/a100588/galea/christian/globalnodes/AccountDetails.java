@@ -189,6 +189,7 @@ public class AccountDetails extends AppCompatActivity {
                                     .into(userImage);
                             Picasso.with(getApplicationContext()).load(user_cover)
                                     .fit()
+                                    .centerCrop()
                                     .into(userCover);
 
                         }catch(Exception e){

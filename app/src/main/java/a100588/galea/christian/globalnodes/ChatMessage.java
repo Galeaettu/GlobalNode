@@ -13,16 +13,23 @@ public class ChatMessage {
     private String messageText;
     private String messageUser;
     private long messageTime;
+    private String messageImage;
     private String userKey;
 
-    public ChatMessage(String messageText, String messageUser, String userKey) {
+    public ChatMessage(String messageText, String messageUser) {
         this.messageText = messageText;
+        this.messageUser = messageUser;
+        userKey = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        // Initialize to current time
+        messageTime = new Date().getTime();
+    }
+
+    public ChatMessage(String messageImage, String messageUser, String userKey) {
+        this.messageImage = messageImage;
         this.messageUser = messageUser;
         this.userKey = userKey;
         // Initialize to current time
         messageTime = new Date().getTime();
-
-//        userKey = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     public ChatMessage(){
@@ -59,5 +66,13 @@ public class ChatMessage {
 
     public void setUserKey(String userKey) {
         this.userKey = userKey;
+    }
+
+    public String getMessageImage() {
+        return messageImage;
+    }
+
+    public void setMessageImage(String messageImage) {
+        this.messageImage = messageImage;
     }
 }
