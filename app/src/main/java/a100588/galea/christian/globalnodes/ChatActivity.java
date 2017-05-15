@@ -352,24 +352,21 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         int id = item.getItemId();
-        //final Toast toast = Toast.makeText(ChatActivity.this,"Deleted",Toast.LENGTH_LONG);
 
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         mMessageKey = adapter.getRef(info.position).getKey();
 
         switch (id){
             case R.id.chat_delete_item:
-//                Log.d("MENU DELETE", mMessageKey);
                 mDatabase.child("Message").child(mMessageKey).removeValue();
                 mDatabase.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Toast.makeText(ChatActivity.this,"Deleted",Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Toast.makeText(ChatActivity.this,"Delete Cancelled",Toast.LENGTH_LONG).show();
+                        Toast.makeText(ChatActivity.this,"Cancelled",Toast.LENGTH_LONG).show();
                     }
                 });
 
