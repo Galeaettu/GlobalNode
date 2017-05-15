@@ -171,8 +171,10 @@ public class ChatActivity extends AppCompatActivity {
                             .getReference()
                             .child("Message")
                             .push()
-                            .setValue(new ChatMessage(input.getText().toString(),
-                                    FirebaseAuth.getInstance().getCurrentUser().getDisplayName())
+                            .setValue(new ChatMessage(
+                                    input.getText().toString()
+                                    , FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),
+                                    FirebaseAuth.getInstance().getCurrentUser().getUid())
                             );
 
                     // Clear the input
@@ -311,11 +313,39 @@ public class ChatActivity extends AppCompatActivity {
         registerForContextMenu(listOfMessages);
     }
 
+
+
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(final ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.chat_context_menu, menu);
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        mMessageKey = adapter.getRef(info.position).getKey();
+
+        DatabaseReference mRefClicked = mDatabase.child("Message").child(mMessageKey);
+        mRefClicked.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
+                final String userKey = chatMessage.getUserKey();
+                Log.d("GOT USER KEY",userKey);
+
+                if (userKey.equals(auth.getCurrentUser().getUid())){
+
+                }else{
+                    Toast.makeText(ChatActivity.this,"This is not your message",Toast.LENGTH_LONG).show();
+                    menu.close();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(ChatActivity.this,"No User Id available",Toast.LENGTH_LONG).show();
+            }
+        });
+
 
     }
 
@@ -326,6 +356,7 @@ public class ChatActivity extends AppCompatActivity {
 
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         mMessageKey = adapter.getRef(info.position).getKey();
+
         switch (id){
             case R.id.chat_delete_item:
 //                Log.d("MENU DELETE", mMessageKey);

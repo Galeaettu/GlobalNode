@@ -1,5 +1,7 @@
 package a100588.galea.christian.globalnodes;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.Date;
 
 /**
@@ -11,13 +13,16 @@ public class ChatMessage {
     private String messageText;
     private String messageUser;
     private long messageTime;
+    private String userKey;
 
-    public ChatMessage(String messageText, String messageUser) {
+    public ChatMessage(String messageText, String messageUser, String userKey) {
         this.messageText = messageText;
         this.messageUser = messageUser;
-
+        this.userKey = userKey;
         // Initialize to current time
         messageTime = new Date().getTime();
+
+//        userKey = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     public ChatMessage(){
@@ -46,5 +51,13 @@ public class ChatMessage {
 
     public void setMessageTime(long messageTime) {
         this.messageTime = messageTime;
+    }
+
+    public String getUserKey() {
+        return userKey;
+    }
+
+    public void setUserKey(String userKey) {
+        this.userKey = userKey;
     }
 }
