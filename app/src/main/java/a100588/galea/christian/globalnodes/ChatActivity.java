@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -315,6 +317,8 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         int id = item.getItemId();
+        Toast toast = Toast.makeText(ChatActivity.this,"Deleted",Toast.LENGTH_LONG);
+
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         mMessageKey = adapter.getRef(info.position).getKey();
         switch (id){
@@ -324,6 +328,7 @@ public class ChatActivity extends AppCompatActivity {
                 Log.d("MENU DELETE", info.toString());
                 Log.d("MENU DELETE", mMessageKey);
                 Log.d("MENU DELETE", Integer.toString( info.position));
+                toast.show();
                 break;
             case R.id.chat_edit_item:
                 break;
