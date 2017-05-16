@@ -4,4 +4,7 @@
     <color name="colorPrimaryDark">#003b8e</color>
     <!--<color name="colorAccent">#FF4081</color>-->
     <color name="colorAccent">#63a4ff</color>
+
+    <color name="chat_border">#ccc</color>
+    <color name="chat_inner_message">#fff</color>
 </resources>
