@@ -3,4 +3,7 @@
     <item
         android:id="@+id/chat_image_send"
         android:title="@string/chat_send_image"/>
+    <item
+        android:id="@+id/chat_image_camera_send"
+        android:title="@string/chat_send_image_camera"/>
 </menu>

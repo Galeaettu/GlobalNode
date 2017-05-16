@@ -24,10 +24,10 @@ public class ChatMessage {
         messageTime = new Date().getTime();
     }
 
-    public ChatMessage(String messageImage, String messageUser, String userKey) {
+    public ChatMessage(String messageImage) {
         this.messageImage = messageImage;
-        this.messageUser = messageUser;
-        this.userKey = userKey;
+        this.messageUser = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        this.userKey = FirebaseAuth.getInstance().getCurrentUser().getUid();
         // Initialize to current time
         messageTime = new Date().getTime();
     }

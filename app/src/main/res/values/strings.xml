@@ -17,5 +17,6 @@
 
     <string name="chat_delete_text">Delete Message</string>
     <string name="chat_edit_text">Edit Message</string>
-    <string name="chat_send_image">Send an Image</string>
+    <string name="chat_send_image">Image from Storage</string>
+    <string name="chat_send_image_camera">Image from Camera</string>
 </resources>

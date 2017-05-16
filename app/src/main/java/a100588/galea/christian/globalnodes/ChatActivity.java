@@ -4,7 +4,10 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.Image;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -37,6 +40,7 @@ import com.facebook.FacebookSdk;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -44,11 +48,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
 
 public class ChatActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 0;
+    private static final int GALLERY_INTENT = 2;
+    private static final int CAMERA_REQUEST_CODE = 1;
     private FirebaseAuth auth;
+    private StorageReference mStorage;
 
     private String mMessageKey = null;
 
@@ -61,6 +74,8 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private ListView listOfMessages;
     private FirebaseListAdapter<ChatMessage> adapter;
+
+    private Uri fileUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,6 +207,10 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        final ProgressDialog mProgress = new ProgressDialog(ChatActivity.this);
+        mProgress.setMessage("Loading Image...");
+
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
                 //User logged in
@@ -208,8 +227,65 @@ public class ChatActivity extends AppCompatActivity {
                 finish();
             }
         }
-    }
+        if(requestCode == GALLERY_INTENT){
+            if(resultCode == RESULT_OK){
+                mProgress.setTitle(R.string.chat_send_image);
+                mProgress.show();
 
+                Uri uri = data.getData();
+
+                StorageReference filepath = mStorage.child("Photos").child(uri.getLastPathSegment());
+                filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        mProgress.dismiss();
+                        Toast.makeText(ChatActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                        Log.d("IMAGE LINK",taskSnapshot.getDownloadUrl().toString());
+                        String imageLink = taskSnapshot.getDownloadUrl().toString();
+
+                        FirebaseDatabase.getInstance()
+                                .getReference()
+                                .child("Message")
+                                .push()
+                                .setValue(new ChatMessage(imageLink)
+                                );
+                    }
+                });
+            }
+        }
+        if(requestCode == CAMERA_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                mProgress.setTitle(R.string.chat_send_image_camera);
+                mProgress.show();
+
+                Bundle extras = data.getExtras();
+                Bitmap bitmap = (Bitmap) extras.get("data");
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] dataBAOS = baos.toByteArray();
+
+                Log.d("CAMERA TEST",data.getExtras().toString());
+                mStorage = FirebaseStorage.getInstance().getReference();
+                StorageReference filepath = mStorage.child("Photos").child(Integer.toString(dataBAOS.length)+ new Date().getTime());
+                filepath.putBytes(dataBAOS).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        mProgress.dismiss();
+                        Toast.makeText(ChatActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                        Log.d("IMAGE LINK",taskSnapshot.getDownloadUrl().toString());
+                        String imageLink = taskSnapshot.getDownloadUrl().toString();
+
+                        FirebaseDatabase.getInstance()
+                                .getReference()
+                                .child("Message")
+                                .push()
+                                .setValue(new ChatMessage(imageLink)
+                                );
+                    }
+                });
+            }
+        }
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -330,8 +406,6 @@ public class ChatActivity extends AppCompatActivity {
         registerForContextMenu(listOfMessages);
     }
 
-
-
     @Override
     public void onCreateContextMenu(final ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -380,8 +454,6 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-
 
         switch (id){
             case R.id.chat_delete_item:
@@ -436,9 +508,26 @@ public class ChatActivity extends AppCompatActivity {
                 dialog.show();
                 break;
             case R.id.chat_image_send:
-                Toast.makeText(ChatActivity.this, "Image Send Test", Toast.LENGTH_SHORT).show();
+                startImageIntent();
+                break;
+            case R.id.chat_image_camera_send:
+                startCameraImageIntent();
                 break;
         }
         return super.onContextItemSelected(item);
+    }
+
+    private void startImageIntent(){
+        mStorage = FirebaseStorage.getInstance().getReference();
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent,GALLERY_INTENT);
+    }
+
+    private void startCameraImageIntent(){
+        mStorage = FirebaseStorage.getInstance().getReference();
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+        startActivityForResult(intent, CAMERA_REQUEST_CODE);
     }
 }
