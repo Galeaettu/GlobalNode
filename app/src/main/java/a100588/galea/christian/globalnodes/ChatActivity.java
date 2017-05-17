@@ -169,6 +169,7 @@ public class ChatActivity extends AppCompatActivity {
                 }
 
                 if(id == R.id.nav_close_app){
+                    moveTaskToBack(true);
                     finish();
                 }
 

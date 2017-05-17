@@ -137,6 +137,7 @@ public class AccountDetails extends AppCompatActivity {
                 }
 
                 if(id == R.id.nav_close_app){
+                    moveTaskToBack(true);
                     finish();
                 }
 

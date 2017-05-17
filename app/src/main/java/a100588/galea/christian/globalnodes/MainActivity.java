@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 if(id == R.id.nav_close_app){
+                    moveTaskToBack(true);
                     finish();
                 }
 
