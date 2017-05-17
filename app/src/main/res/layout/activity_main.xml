@@ -28,7 +28,7 @@
                 android:background="@drawable/title_background"
                 android:text="@string/home_chatting_title"
                 android:textColor="#fff"
-                android:id="@+id/textView"
+                android:id="@+id/home_chat_header"
                 android:textSize="30sp"
                 android:textStyle="italic"
                 android:layout_centerVertical="true"
@@ -40,11 +40,10 @@
                 android:background="@drawable/title_background_time"
                 android:text="1:10:25"
                 android:textColor="#fff"
-                android:id="@+id/textView2"
+                android:id="@+id/home_chat_time"
                 android:textSize="20sp"
-                android:textStyle="italic"
-                android:layout_below="@+id/textView"
-                android:layout_alignEnd="@+id/textView" />
+                android:layout_below="@+id/home_chat_header"
+                android:layout_alignEnd="@+id/home_chat_header" />
 
         </RelativeLayout>
 

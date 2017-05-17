@@ -21,4 +21,7 @@
     <string name="chat_edit_text">Edit Message</string>
     <string name="chat_send_image">Image from Storage</string>
     <string name="chat_send_image_camera">Image from Camera</string>
+
+    <string name="saved_default_time"></string>
+    <string name="saved_default_time_first"></string>
 </resources>

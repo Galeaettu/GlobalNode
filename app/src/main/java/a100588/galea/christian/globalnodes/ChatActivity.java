@@ -1,9 +1,12 @@
 package a100588.galea.christian.globalnodes;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -67,6 +70,7 @@ public class ChatActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 0;
     private static final int GALLERY_INTENT = 2;
     private static final int CAMERA_REQUEST_CODE = 1;
+    public static final String PREFS_NAME = "TimeElapsed";
     private FirebaseAuth auth;
     private StorageReference mStorage;
 
@@ -81,6 +85,8 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private ListView listOfMessages;
     private FirebaseListAdapter<ChatMessage> adapter;
+
+    public long timeElapsed = 1000;
 
     private Uri fileUri;
 
@@ -165,7 +171,7 @@ public class ChatActivity extends AppCompatActivity {
                     startActivityForResult(AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setTheme(R.style.LoginTheme)
-                            .setLogo(R.drawable.login_logo)
+                            .setLogo(R.drawable.icon_svg)
                             .setProviders(
                                     AuthUI.FACEBOOK_PROVIDER)
                             .build(), RC_SIGN_IN);
@@ -215,6 +221,31 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        timeElapsed = System.currentTimeMillis();
+        editor.putLong(getString(R.string.saved_default_time), timeElapsed);
+        editor.apply();
+
+        Log.d("CHAT - SAVED PAUSE", Long.toString(timeElapsed));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        timeElapsed = System.currentTimeMillis();
+        editor.putLong(getString(R.string.saved_default_time), timeElapsed);
+        editor.apply();
+
+        Log.d("CHAT - SAVED STOP", Long.toString(timeElapsed));
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -342,7 +373,7 @@ public class ChatActivity extends AppCompatActivity {
             startActivityForResult(AuthUI.getInstance()
                     .createSignInIntentBuilder()
                     .setTheme(R.style.LoginTheme)
-                    .setLogo(R.drawable.login_logo)
+                    .setLogo(R.drawable.icon_svg)
                     .setProviders(
                             AuthUI.FACEBOOK_PROVIDER)
                     .build(), RC_SIGN_IN);

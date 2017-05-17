@@ -1,6 +1,8 @@
 package a100588.galea.christian.globalnodes;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -13,6 +15,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -37,15 +41,24 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.w3c.dom.Text;
+
 import java.lang.reflect.Array;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int RC_SIGN_IN = 0;
+    public static final String PREFS_NAME = "TimeElapsed";
+    public static final String PREFS_NAME_NEW = "TimeElapsed_new";
     private FirebaseAuth auth;
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
+
+    private TextView timeElapsedView;
 
 
     @Override
@@ -79,7 +92,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        mToolbar = (Toolbar)findViewById(R.id.nav_action);
 //        NavigationHelper navigationHelper = new NavigationHelper();
 //        navigationHelper.setupDrawer(mToolbar);
+
+        SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME_NEW, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        long shared_elapsed_time_new = sharedPref.getLong(getString(R.string.saved_default_time_first), System.currentTimeMillis());
+        Log.d("MAIN SHARED 1",Long.toString(shared_elapsed_time_new));
+        editor.putLong(getString(R.string.saved_default_time_first), shared_elapsed_time_new);
+        editor.apply();
         setupDrawer();
+        Log.d("MAIN SHARED","CREATED NEW");
+        timeSharedPreferences();
     }
 
 /*    @Override
@@ -92,8 +114,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         NavigationView navigationView;
         navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.getMenu().getItem(0).setChecked(false);
         navigationView.getMenu().getItem(1).setChecked(false);
+        navigationView.getMenu().getItem(2).setChecked(false);
+
+        timeSharedPreferences();
+    }
+
+    private void timeSharedPreferences() {
+        SharedPreferences sharedPrefNew = getSharedPreferences(PREFS_NAME_NEW, Context.MODE_PRIVATE);
+        long defaultValue = System.currentTimeMillis();
+
+        long shared_elapsed_time_new = sharedPrefNew.getLong(getString(R.string.saved_default_time_first), defaultValue);
+        Log.d("MAIN - STRING new", Long.toString(shared_elapsed_time_new));
+
+        timeElapsedView = (TextView)findViewById(R.id.home_chat_time);
+        SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        long shared_elapsed_time = sharedPref.getLong(getString(R.string.saved_default_time), defaultValue);
+        Log.d("MAIN - STRING curr", Long.toString(shared_elapsed_time));
+
+        long difference = shared_elapsed_time - shared_elapsed_time_new;
+        long differenceInSeconds = difference / DateUtils.SECOND_IN_MILLIS;
+        String formatted = DateUtils.formatElapsedTime(differenceInSeconds);
+
+
+        try{
+//            timeElapsedView.setText(String.format(Locale.ENGLISH,"%d",shared_elapsed_time));
+            timeElapsedView.setText(formatted);
+        }catch(Exception e){
+            Log.d("SHARED FAILED", e.getMessage());
+        }
+        Log.d("MAIN - STRING CREATE", formatted);
     }
 
     @Override
@@ -195,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     startActivityForResult(AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setTheme(R.style.LoginTheme)
-                            .setLogo(R.drawable.login_logo)
+                            .setLogo(R.drawable.icon_svg)
                             .setProviders(
                                     AuthUI.FACEBOOK_PROVIDER)
                             .build(), RC_SIGN_IN);

@@ -1,5 +1,6 @@
 package a100588.galea.christian.globalnodes;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -9,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.os.ResultReceiver;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -75,7 +77,7 @@ public class AccountDetails extends AppCompatActivity {
             startActivityForResult(AuthUI.getInstance()
                     .createSignInIntentBuilder()
                     .setTheme(R.style.LoginTheme)
-                    .setLogo(R.drawable.login_logo)
+                    .setLogo(R.drawable.icon_svg)
                     .setProviders(
                             AuthUI.FACEBOOK_PROVIDER)
                     .build(), RC_SIGN_IN);
@@ -168,7 +170,6 @@ public class AccountDetails extends AppCompatActivity {
                 , new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
-                        mProgress.show();
                         String user_id = "";
                         String user_name = "";
                         String user_gender = "";
@@ -292,7 +293,7 @@ public class AccountDetails extends AppCompatActivity {
             startActivityForResult(AuthUI.getInstance()
                     .createSignInIntentBuilder()
                     .setTheme(R.style.LoginTheme)
-                    .setLogo(R.drawable.login_logo)
+                    .setLogo(R.drawable.icon_svg)
                     .setProviders(
                             AuthUI.FACEBOOK_PROVIDER)
                     .build(), RC_SIGN_IN);
