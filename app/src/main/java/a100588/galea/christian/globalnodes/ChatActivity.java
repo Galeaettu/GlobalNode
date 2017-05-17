@@ -5,6 +5,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.media.Image;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -12,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,7 +23,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.text.format.DateFormat;
+import android.util.LayoutDirection;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
@@ -32,6 +38,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -377,6 +384,32 @@ public class ChatActivity extends AppCompatActivity {
                 TextView messageTime = (TextView)v.findViewById(R.id.message_time);
                 ImageView messageImage = (ImageView)v.findViewById(R.id.message_image);
 
+                RelativeLayout messageContent = (RelativeLayout)v.findViewById(R.id.message_content);
+
+                RelativeLayout.LayoutParams params_user_name = (RelativeLayout.LayoutParams)messageUser.getLayoutParams();
+                RelativeLayout.LayoutParams params_user_content = (RelativeLayout.LayoutParams)messageContent.getLayoutParams();
+
+                Drawable bg = messageContent.getBackground();
+                GradientDrawable shapeDrawable = (GradientDrawable ) bg;
+
+                if(auth.getCurrentUser().getUid().equals(model.getUserKey())){
+                    params_user_name.removeRule(RelativeLayout.ALIGN_PARENT_START);
+                    params_user_name.addRule(RelativeLayout.ALIGN_PARENT_END);
+                    params_user_content.removeRule(RelativeLayout.ALIGN_PARENT_START);
+                    params_user_content.addRule(RelativeLayout.ALIGN_PARENT_END);
+
+
+                    shapeDrawable.setColor(ContextCompat.getColor(ChatActivity.this,R.color.chat_user_message));
+
+                }else{
+                    params_user_name.removeRule(RelativeLayout.ALIGN_PARENT_END);
+                    params_user_name.addRule(RelativeLayout.ALIGN_PARENT_START);
+                    params_user_content.removeRule(RelativeLayout.ALIGN_PARENT_END);
+                    params_user_content.addRule(RelativeLayout.ALIGN_PARENT_START);
+
+                    shapeDrawable.setColor(ContextCompat.getColor(ChatActivity.this,R.color.chat_inner_message));
+                }
+
 
                 // Set their text
                 messageText.setText(model.getMessageText());
@@ -473,17 +506,35 @@ public class ChatActivity extends AppCompatActivity {
 
                 break;
             case R.id.chat_edit_item:
-                View view = (LayoutInflater.from(ChatActivity.this)).inflate(R.layout.chat_dialog_edit,null);
+                final View view = (LayoutInflater.from(ChatActivity.this)).inflate(R.layout.chat_dialog_edit,null);
                 final EditText editMessageText = (EditText)view.findViewById(R.id.chat_message_edit);
-                AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
                 DatabaseReference mRef = mDatabase.child("Message").child(mMessageKey);
                 mRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
-                        final String messageTextToEdit = chatMessage.getMessageText();
-                        Log.d("GOT TEXT",messageTextToEdit);
-                        editMessageText.setText(messageTextToEdit);
+                        try {
+                            ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
+                            final String messageTextToEdit = chatMessage.getMessageText();
+                            Log.d("GOT TEXT", messageTextToEdit);
+                            editMessageText.setText(messageTextToEdit);
+                            builder.setTitle("Edit message");
+                            builder.setView(view);
+                            builder
+                                    .setPositiveButton(R.string.chat_edit_text, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            Log.d("EDIT TEXT", editMessageText.getText().toString());
+                                            mDatabase.child("Message").child(mMessageKey).child("messageText")
+                                                    .setValue(editMessageText.getText().toString());
+                                        }
+                                    });
+
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }catch(Exception e){
+                            Toast.makeText(ChatActivity.this, "Cannot change image", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -492,20 +543,8 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
 
-                builder.setTitle("Edit message");
-                builder.setView(view);
-                builder
-                        .setPositiveButton(R.string.chat_edit_text, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Log.d("EDIT TEXT",editMessageText.getText().toString());
-                                mDatabase.child("Message").child(mMessageKey).child("messageText")
-                                        .setValue(editMessageText.getText().toString());
-                            }
-                        });
 
-                AlertDialog dialog = builder.create();
-                dialog.show();
+
                 break;
             case R.id.chat_image_send:
                 startImageIntent();

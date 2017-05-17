@@ -5,6 +5,7 @@
     <!--<color name="colorAccent">#FF4081</color>-->
     <color name="colorAccent">#63a4ff</color>
 
-    <color name="chat_border">#ccc</color>
-    <color name="chat_inner_message">#fff</color>
+    <color name="chat_border">#E0E0E0</color>
+    <color name="chat_inner_message">#EFF8E7</color>
+    <color name="chat_user_message">#E7EFF8</color>
 </resources>
