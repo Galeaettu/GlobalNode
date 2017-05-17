@@ -10,6 +10,7 @@
 
     <string name="log_out">Log Out</string>
     <string name="chat">Chat</string>
+    <string name="home">Home</string>
     <string name="close_app">Exit</string>
     <string name="my_account">My Account</string>
     <string name="cover_image">Cover Image</string>

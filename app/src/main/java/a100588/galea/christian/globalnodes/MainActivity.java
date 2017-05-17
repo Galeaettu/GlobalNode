@@ -214,6 +214,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        navigationView.getMenu().getItem(0).setChecked(true);
     }
 //
     @Override
@@ -284,12 +286,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void openUserDetails(View view){
         Intent intent = new Intent(this,AccountDetails.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME );
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME );
         startActivity(intent);
     }
     public void openChatActivity(View view){
         Intent intent = new Intent(this,ChatActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME );
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME );
         startActivity(intent);
     }
 }

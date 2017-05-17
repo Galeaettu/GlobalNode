@@ -114,6 +114,10 @@ public class AccountDetails extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem item) {
                 int id = item.getItemId();
 
+                if(id == R.id.nav_home){
+                    openHome(getCurrentFocus());
+                }
+
                 if(id == R.id.nav_account){
                     openUserDetails(getCurrentFocus());
                     Log.d("NAV", "ACCOUNT");
@@ -149,7 +153,7 @@ public class AccountDetails extends AppCompatActivity {
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        navigationView.getMenu().getItem(0).setChecked(true);
+        navigationView.getMenu().getItem(1).setChecked(true);
 
 
         // FACEBOOK TEST
@@ -313,12 +317,17 @@ public class AccountDetails extends AppCompatActivity {
 
     public void openUserDetails(View view){
         Intent intent = new Intent(this,AccountDetails.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME );
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME );
         startActivity(intent);
     }
     public void openChatActivity(View view){
         Intent intent = new Intent(this,ChatActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME );
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME );
+        startActivity(intent);
+    }
+    public void openHome(View view){
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 }
