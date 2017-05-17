@@ -15,6 +15,7 @@
     <string name="my_account">My Account</string>
     <string name="cover_image">Cover Image</string>
     <string name="user_profile_image">User Profile Image</string>
+    <string name="home_chatting_title">Time Spent Chatting</string>
 
     <string name="chat_delete_text">Delete Message</string>
     <string name="chat_edit_text">Edit Message</string>

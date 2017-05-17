@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivityForResult(AuthUI.getInstance()
                     .createSignInIntentBuilder()
                     .setTheme(R.style.LoginTheme)
-                    .setLogo(R.drawable.login_logo)
+                    .setLogo(R.drawable.icon_svg)
                     .setProviders(
                             AuthUI.FACEBOOK_PROVIDER)
                     .build(), RC_SIGN_IN);
