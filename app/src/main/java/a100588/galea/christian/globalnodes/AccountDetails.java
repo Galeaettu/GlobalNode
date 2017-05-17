@@ -201,12 +201,6 @@ public class AccountDetails extends AppCompatActivity {
                             Log.d("FACEBOOK ERR","ERR");
                         }
                         //response.getJSONArray();
-                        Log.d("FB TEST",user_id );
-                        Log.d("FB TEST",user_name );
-                        Log.d("FB TEST",user_gender );
-                        Log.d("FB TEST COVER",user_cover );
-                        Log.d("FB TEST",user_picture );
-                        Log.d("FB TEST",object.toString() );
                         Log.d("FB COMPLETE", "COMPLETE");
                         mProgress.dismiss();
                     }
@@ -317,12 +311,12 @@ public class AccountDetails extends AppCompatActivity {
 
     public void openUserDetails(View view){
         Intent intent = new Intent(this,AccountDetails.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME );
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_TASK_ON_HOME | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
     }
     public void openChatActivity(View view){
         Intent intent = new Intent(this,ChatActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME );
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_TASK_ON_HOME | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
     }
     public void openHome(View view){
