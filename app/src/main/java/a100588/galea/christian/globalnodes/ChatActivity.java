@@ -8,17 +8,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -31,6 +34,7 @@ import android.text.format.DateFormat;
 import android.util.LayoutDirection;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -64,6 +68,9 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ChatActivity extends AppCompatActivity {
@@ -90,6 +97,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public long timeElapsed = 1000;
 
+    private String mCurrentPhotoPath;
     private Uri fileUri;
 
     @Override
@@ -353,16 +361,18 @@ public class ChatActivity extends AppCompatActivity {
                 mProgress.setTitle(R.string.chat_send_image_camera);
                 mProgress.show();
 
-                Bundle extras = data.getExtras();
-                Bitmap bitmap = (Bitmap) extras.get("data");
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] dataBAOS = baos.toByteArray();
+//                Bundle extras = data.getExtras();
+//                Bitmap bitmap = (Bitmap) extras.get("data");
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+//                byte[] dataBAOS = baos.toByteArray();
 
-                Log.d("CAMERA TEST",data.getExtras().toString());
+                //fileUri = data.getData();
+
+                //Log.d("CAMERA TEST",data.toString());
                 mStorage = FirebaseStorage.getInstance().getReference();
-                StorageReference filepath = mStorage.child("Photos").child(Integer.toString(dataBAOS.length)+ new Date().getTime());
-                filepath.putBytes(dataBAOS).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                StorageReference filepath = mStorage.child("Photos").child(fileUri.getLastPathSegment()+ new Date().getTime());
+                filepath.putFile(fileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         mProgress.dismiss();
@@ -508,11 +518,18 @@ public class ChatActivity extends AppCompatActivity {
                 messageText.setText(model.getMessageText());
                 messageUser.setText(model.getMessageUser());
 
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point(); display.getSize(size);
+                int width = size.x;
+
                 try {
                     if (model.getMessageImage().length() > 0) {
                         Log.d("MESSAGE PIC", model.getMessageImage());
                         messageImage.setVisibility(View.VISIBLE);
-                        Picasso.with(ChatActivity.this).load(model.getMessageImage()).into(messageImage);
+                        Picasso.with(ChatActivity.this).load(model.getMessageImage())
+                                .resize(width, 0)
+                                .onlyScaleDown()
+                                .into(messageImage);
                         Log.d("MESSAGE PIC", "YEP");
                     }
                 }catch (NullPointerException e){
@@ -656,10 +673,43 @@ public class ChatActivity extends AppCompatActivity {
         startActivityForResult(intent,GALLERY_INTENT);
     }
 
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
     private void startCameraImageIntent(){
         mStorage = FirebaseStorage.getInstance().getReference();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-        startActivityForResult(intent, CAMERA_REQUEST_CODE);
+
+        // Ensure that there's a camera activity to handle the intent
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                fileUri = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+                startActivityForResult(intent, CAMERA_REQUEST_CODE);
+            }
+        }
     }
 }
