@@ -24,6 +24,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.text.TextUtilsCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -32,6 +33,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.LayoutDirection;
 import android.util.Log;
@@ -559,8 +561,9 @@ public class ChatActivity extends AppCompatActivity {
 
         switch (id){
             case R.id.list_of_messages:
-                MenuInflater inflater = getMenuInflater();
+                final MenuInflater inflater = getMenuInflater();
                 inflater.inflate(R.menu.chat_context_menu, menu);
+
 
                 AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
                 mMessageKey = adapter.getRef(info.position).getKey();
@@ -574,6 +577,12 @@ public class ChatActivity extends AppCompatActivity {
                         Log.d("GOT USER KEY",userKey);
 
                         if (userKey.equals(auth.getCurrentUser().getUid())){
+                            final String sentImage = chatMessage.getMessageImage();
+                            if(!TextUtils.isEmpty(sentImage)){
+                                menu.removeItem(R.id.chat_edit_item);
+                                menu.add(Menu.NONE,R.id.chat_open_item,Menu.NONE, R.string.chat_open_image);
+//                                menu.add(R.id.chat_open_item);
+                            }
 
                         }else{
                             Toast.makeText(ChatActivity.this,"This is not your message",Toast.LENGTH_LONG).show();
@@ -655,8 +664,27 @@ public class ChatActivity extends AppCompatActivity {
 
                     }
                 });
+                break;
+            case R.id.chat_open_item:
+                mRef = mDatabase.child("Message").child(mMessageKey);
+                mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        try {
+                            ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
+                            final String messageImage = chatMessage.getMessageImage();
+                            openImageIntent(messageImage);
+                        }catch(Exception e){
+                            Toast.makeText(ChatActivity.this, "Cannot Open Image", Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
+                    }
+                });
+                Toast.makeText(ChatActivity.this, "Opening Image", Toast.LENGTH_SHORT).show();
 
                 break;
             case R.id.chat_image_send:
@@ -667,6 +695,12 @@ public class ChatActivity extends AppCompatActivity {
                 break;
         }
         return super.onContextItemSelected(item);
+    }
+
+    private void openImageIntent(String url){
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 
     private void startImageIntent(){

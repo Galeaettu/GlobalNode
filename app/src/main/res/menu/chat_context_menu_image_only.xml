@@ -4,6 +4,6 @@
         android:id="@+id/chat_delete_item"
         android:title="@string/chat_delete_text" />
     <item
-        android:id="@+id/chat_edit_item"
-        android:title="@string/chat_edit_text"/>
+        android:id="@+id/chat_open_item"
+        android:title="@string/chat_open_image"/>
 </menu>
