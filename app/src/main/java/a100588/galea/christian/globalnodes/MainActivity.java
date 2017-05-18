@@ -5,48 +5,26 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.provider.IDPProviderParcel;
-import com.firebase.ui.auth.provider.IDPResponse;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int RC_SIGN_IN = 0;
@@ -56,8 +34,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
-
-    private TextView timeElapsedView;
 
 
     @Override
@@ -109,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         navigationView.getMenu().getItem(0).setChecked(true);
         navigationView.getMenu().getItem(1).setChecked(false);
         navigationView.getMenu().getItem(2).setChecked(false);
+        navigationView.getMenu().getItem(3).setChecked(false);
 
 
         timeSharedPreferences();
@@ -117,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void timeSharedPreferences() {
         long defaultValue = 0;
 
-        timeElapsedView = (TextView)findViewById(R.id.home_chat_time);
+        TextView timeElapsedView = (TextView) findViewById(R.id.home_chat_time);
         SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         long shared_elapsed_time = sharedPref.getLong(getString(R.string.saved_default_time), defaultValue);
         Log.d("MAIN - STRING curr", Long.toString(shared_elapsed_time));
@@ -213,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         NavigationHelper nh = new NavigationHelper();
-        nh.setHeaderDetails(auth,navigationView, getApplicationContext());
+        nh.setHeaderDetails(navigationView, getApplicationContext());
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override

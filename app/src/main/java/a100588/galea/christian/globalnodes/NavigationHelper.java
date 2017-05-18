@@ -28,7 +28,6 @@ public class NavigationHelper extends AppCompatActivity{
     private TextView headerName;
     private ImageView headerImage;
 
-    private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
 
@@ -40,9 +39,9 @@ public class NavigationHelper extends AppCompatActivity{
         headerImage = (ImageView)hView.findViewById(R.id.header_profile_image);
     }
 
-    public void setHeaderDetails(FirebaseAuth auth, NavigationView navigationView, Context context){
+    public void setHeaderDetails(NavigationView navigationView, Context context){
         getHeaderDetails(navigationView);
-        auth = FirebaseAuth.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         if(auth.getCurrentUser() != null) {
             headerName.setText(auth.getCurrentUser().getDisplayName());
             headerEmail.setText(auth.getCurrentUser().getEmail());
@@ -65,7 +64,7 @@ public class NavigationHelper extends AppCompatActivity{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
@@ -84,7 +83,7 @@ public class NavigationHelper extends AppCompatActivity{
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         NavigationHelper nh = new NavigationHelper();
-        nh.setHeaderDetails(auth,navigationView, getApplicationContext());
+        nh.setHeaderDetails(navigationView, getApplicationContext());
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override

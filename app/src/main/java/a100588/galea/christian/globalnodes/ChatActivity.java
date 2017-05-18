@@ -1,19 +1,14 @@
 package a100588.galea.christian.globalnodes;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -24,7 +19,6 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v4.text.TextUtilsCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -32,14 +26,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
-import android.util.LayoutDirection;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,7 +62,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -93,16 +83,12 @@ public class ChatActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
-    private NavigationView navigationView;
-    private Toolbar mToolbar;
 
     private DatabaseReference mDatabase;
-    private ListView listOfMessages;
     private FirebaseListAdapter<ChatMessage> adapter;
 
     public long timeElapsed = 1000;
 
-    private String mCurrentPhotoPath;
     private Uri fileUri;
 
     @Override
@@ -119,7 +105,7 @@ public class ChatActivity extends AppCompatActivity {
             //user already signed in
             Log.d("AUTH ACTIVITY", auth.getCurrentUser().getEmail());
             displayChatMessages();
-            listOfMessages = (ListView)findViewById(R.id.list_of_messages);
+            ListView listOfMessages = (ListView) findViewById(R.id.list_of_messages);
             listOfMessages.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         }else{
             finish();
@@ -135,11 +121,11 @@ public class ChatActivity extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         NavigationHelper nh = new NavigationHelper();
-        nh.setHeaderDetails(auth,navigationView, getApplicationContext());
+        nh.setHeaderDetails(navigationView, getApplicationContext());
 
-        mToolbar = (Toolbar)findViewById(R.id.nav_action);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.nav_action);
         setSupportActionBar(mToolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -708,7 +694,7 @@ public class ChatActivity extends AppCompatActivity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
+        String mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
 
