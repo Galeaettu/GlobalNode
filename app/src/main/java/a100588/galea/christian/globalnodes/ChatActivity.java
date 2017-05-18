@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -20,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
@@ -80,6 +82,7 @@ public class ChatActivity extends AppCompatActivity {
     public static final String PREFS_NAME = "TimeElapsed";
     public static final String PREFS_NAME_DIFF = "TimeElapsed_Diff";
     public static final String PREFS_NAME_TOTAL = "TimeElapsed_Total";
+    public static final int MY_CAMERA_REQUEST_RESULT = 3;
     private FirebaseAuth auth;
     private StorageReference mStorage;
 
@@ -690,6 +693,42 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void startCameraImageIntent(){
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.CAMERA)) {
+                Log.d("CAMERA","EXPLANATION");
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.CAMERA},
+                        MY_CAMERA_REQUEST_RESULT);
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                Log.d("CAMERA","NO EXPLANATION");
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.CAMERA},
+                        MY_CAMERA_REQUEST_RESULT);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }else{
+            Log.d("CAMERA","START CAM");
+            startCamera();
+        }
+    }
+
+    private void startCamera() {
         mStorage = FirebaseStorage.getInstance().getReference();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -710,6 +749,39 @@ public class ChatActivity extends AppCompatActivity {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                 startActivityForResult(intent, CAMERA_REQUEST_CODE);
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_CAMERA_REQUEST_RESULT: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Log.d("CAMERA DENIED","ALLOWED");
+
+
+                    startCamera();
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    Toast.makeText(ChatActivity.this, "DENIED", Toast.LENGTH_LONG).show();
+                    Log.d("CAMERA DENIED","DENIED");
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
         }
     }
 }
