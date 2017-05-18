@@ -248,25 +248,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-
-        timeElapsed = System.currentTimeMillis();
-        SharedPreferences sharedPrefDiff = getSharedPreferences(PREFS_NAME_DIFF, Context.MODE_PRIVATE);
-        long shared_elapsed_time_diff = sharedPrefDiff.getLong(getString(R.string.saved_default_time_diff), timeElapsed);
-
-        timeElapsed = timeElapsed-shared_elapsed_time_diff;
-
-        SharedPreferences sharedPrefTotal = getSharedPreferences(PREFS_NAME_TOTAL, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editorTotal = sharedPrefTotal.edit();
-        long shared_elapsed_time_total = sharedPref.getLong(getString(R.string.saved_default_time_total), timeElapsed);
-        editorTotal.putLong(getString(R.string.saved_default_time_total), timeElapsed);
-        editorTotal.apply();
-
-        timeElapsed = timeElapsed+shared_elapsed_time_total;
-
-        editor.putLong(getString(R.string.saved_default_time), timeElapsed);
-        editor.apply();
+        setSharedPreferences();
         Log.d("CHAT-PAUSE", Long.toString(timeElapsed));
     }
 
@@ -274,6 +256,11 @@ public class ChatActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
+        setSharedPreferences();
+        Log.d("CHAT-STOP", Long.toString(timeElapsed));
+    }
+
+    private void setSharedPreferences() {
         SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
@@ -293,7 +280,6 @@ public class ChatActivity extends AppCompatActivity {
 
         editor.putLong(getString(R.string.saved_default_time), timeElapsed);
         editor.apply();
-        Log.d("CHAT-STOP", Long.toString(timeElapsed));
     }
 
     @Override

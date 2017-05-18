@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void timeSharedPreferences() {
-        long defaultValue = System.currentTimeMillis();
+        long defaultValue = 0;
 
         timeElapsedView = (TextView)findViewById(R.id.home_chat_time);
         SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
