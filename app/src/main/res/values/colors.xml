@@ -9,5 +9,6 @@
     <color name="chat_inner_message">#EFF8E7</color>
     <color name="chat_user_message">#E7EFF8</color>
 
-    <color name="bg_black">#000</color>
+    <color name="bg_black">#414142</color>
+    <color name="bg_black_two">#313132</color>
 </resources>

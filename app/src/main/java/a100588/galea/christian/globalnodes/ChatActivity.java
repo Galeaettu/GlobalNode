@@ -254,7 +254,7 @@ public class ChatActivity extends AppCompatActivity {
 
         SharedPreferences sharedPrefTotal = getSharedPreferences(PREFS_NAME_TOTAL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editorTotal = sharedPrefTotal.edit();
-        long shared_elapsed_time_total = sharedPref.getLong(getString(R.string.saved_default_time_diff), timeElapsed);
+        long shared_elapsed_time_total = sharedPref.getLong(getString(R.string.saved_default_time_total), timeElapsed);
         editorTotal.putLong(getString(R.string.saved_default_time_total), timeElapsed);
         editorTotal.apply();
 
@@ -280,7 +280,7 @@ public class ChatActivity extends AppCompatActivity {
 
         SharedPreferences sharedPrefTotal = getSharedPreferences(PREFS_NAME_TOTAL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editorTotal = sharedPrefTotal.edit();
-        long shared_elapsed_time_total = sharedPref.getLong(getString(R.string.saved_default_time_diff), timeElapsed);
+        long shared_elapsed_time_total = sharedPref.getLong(getString(R.string.saved_default_time_total), timeElapsed);
         editorTotal.putLong(getString(R.string.saved_default_time_total), timeElapsed);
         editorTotal.apply();
 
