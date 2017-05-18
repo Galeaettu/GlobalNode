@@ -693,37 +693,41 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void startCameraImageIntent(){
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    android.Manifest.permission.CAMERA)) {
-                Log.d("CAMERA","EXPLANATION");
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        android.Manifest.permission.CAMERA)) {
+                    Log.d("CAMERA", "EXPLANATION");
 
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.CAMERA},
-                        MY_CAMERA_REQUEST_RESULT);
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.CAMERA},
+                            MY_CAMERA_REQUEST_RESULT);
 
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
 
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    Log.d("CAMERA", "NO EXPLANATION");
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.CAMERA},
+                            MY_CAMERA_REQUEST_RESULT);
+
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
             } else {
-
-                // No explanation needed, we can request the permission.
-
-                Log.d("CAMERA","NO EXPLANATION");
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.CAMERA},
-                        MY_CAMERA_REQUEST_RESULT);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+                Log.d("CAMERA", "START CAM");
+                startCamera();
             }
         }else{
-            Log.d("CAMERA","START CAM");
             startCamera();
         }
     }
