@@ -24,4 +24,6 @@
 
     <string name="saved_default_time"></string>
     <string name="saved_default_time_first"></string>
+    <string name="saved_default_time_diff"></string>
+    <string name="saved_default_time_total"></string>
 </resources>

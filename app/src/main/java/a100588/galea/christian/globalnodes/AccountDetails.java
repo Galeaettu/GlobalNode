@@ -213,6 +213,16 @@ public class AccountDetails extends AppCompatActivity {
 
 
 
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NavigationView navigationView;
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.getMenu().getItem(1).setChecked(true);
     }
 
     @Override

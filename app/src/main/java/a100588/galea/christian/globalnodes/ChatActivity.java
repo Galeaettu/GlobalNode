@@ -71,6 +71,8 @@ public class ChatActivity extends AppCompatActivity {
     private static final int GALLERY_INTENT = 2;
     private static final int CAMERA_REQUEST_CODE = 1;
     public static final String PREFS_NAME = "TimeElapsed";
+    public static final String PREFS_NAME_DIFF = "TimeElapsed_Diff";
+    public static final String PREFS_NAME_TOTAL = "TimeElapsed_Total";
     private FirebaseAuth auth;
     private StorageReference mStorage;
 
@@ -219,6 +221,14 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+
+        SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME_DIFF, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        timeElapsed = System.currentTimeMillis();
+        long shared_elapsed_time_diff = sharedPref.getLong(getString(R.string.saved_default_time_diff), timeElapsed);
+        editor.putLong(getString(R.string.saved_default_time_diff), timeElapsed);
+        editor.apply();
+        Log.d("CHAT-CREATE",Long.toString(shared_elapsed_time_diff));
     }
 
     @Override
@@ -227,11 +237,24 @@ public class ChatActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
+
         timeElapsed = System.currentTimeMillis();
+        SharedPreferences sharedPrefDiff = getSharedPreferences(PREFS_NAME_DIFF, Context.MODE_PRIVATE);
+        long shared_elapsed_time_diff = sharedPrefDiff.getLong(getString(R.string.saved_default_time_diff), timeElapsed);
+
+        timeElapsed = timeElapsed-shared_elapsed_time_diff;
+
+        SharedPreferences sharedPrefTotal = getSharedPreferences(PREFS_NAME_TOTAL, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editorTotal = sharedPrefTotal.edit();
+        long shared_elapsed_time_total = sharedPref.getLong(getString(R.string.saved_default_time_diff), timeElapsed);
+        editorTotal.putLong(getString(R.string.saved_default_time_total), timeElapsed);
+        editorTotal.apply();
+
+        timeElapsed = timeElapsed+shared_elapsed_time_total;
+
         editor.putLong(getString(R.string.saved_default_time), timeElapsed);
         editor.apply();
-
-        Log.d("CHAT - SAVED PAUSE", Long.toString(timeElapsed));
+        Log.d("CHAT-PAUSE", Long.toString(timeElapsed));
     }
 
     @Override
@@ -240,11 +263,40 @@ public class ChatActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
+
         timeElapsed = System.currentTimeMillis();
+        SharedPreferences sharedPrefDiff = getSharedPreferences(PREFS_NAME_DIFF, Context.MODE_PRIVATE);
+        long shared_elapsed_time_diff = sharedPrefDiff.getLong(getString(R.string.saved_default_time_diff), timeElapsed);
+
+        timeElapsed = timeElapsed-shared_elapsed_time_diff;
+
+        SharedPreferences sharedPrefTotal = getSharedPreferences(PREFS_NAME_TOTAL, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editorTotal = sharedPrefTotal.edit();
+        long shared_elapsed_time_total = sharedPref.getLong(getString(R.string.saved_default_time_diff), timeElapsed);
+        editorTotal.putLong(getString(R.string.saved_default_time_total), timeElapsed);
+        editorTotal.apply();
+
+        timeElapsed = timeElapsed+shared_elapsed_time_total;
+
         editor.putLong(getString(R.string.saved_default_time), timeElapsed);
         editor.apply();
+        Log.d("CHAT-STOP", Long.toString(timeElapsed));
+    }
 
-        Log.d("CHAT - SAVED STOP", Long.toString(timeElapsed));
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NavigationView navigationView;
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.getMenu().getItem(2).setChecked(true);
+
+        SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME_DIFF, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        timeElapsed = System.currentTimeMillis();
+        long shared_elapsed_time_diff = sharedPref.getLong(getString(R.string.saved_default_time_diff), timeElapsed);
+        editor.putLong(getString(R.string.saved_default_time_diff), timeElapsed);
+        editor.apply();
+        Log.d("CHAT-RESUME",Long.toString(shared_elapsed_time_diff));
     }
 
     @Override
